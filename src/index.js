@@ -5,17 +5,21 @@ app.use(express.json());
 
 customers = [];
 
-app.get("/account", (request, response) => {
+app.post("/account", (request, response) => {
   const {name , nbi} = request.body;
-
+  const id = uuidv4();
   customers.push({
-    id = uuidv4,
+    id,
     name,
     nbi,
-    statement: [],
+    statement: []
   });
  
   return response.status(201).send();
+});
+
+app.get("/see", (require, response) => {
+  return response.json(customers);
 });
 
 app.listen(3333);
