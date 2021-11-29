@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 app.use(express.json());
 
 customers = [];
+// Middleware
 
 function VeriflyIsExistsAccountCPF (request, response, next){
   const { cpf } = request.headers;
@@ -15,6 +16,18 @@ function VeriflyIsExistsAccountCPF (request, response, next){
   }
   request.customer = customer;
   return next();
+}
+
+function getbalance(statement){
+  const balance = statement.reduce((acc,operation) => {
+    if(operation == "credit"){
+      return acc + operation.amount;
+    }else {
+      return acc - operation.amount;
+    }
+  }, 0);
+  
+  return balance;
 }
 
 app.post("/account", (request, response) => {
@@ -58,6 +71,27 @@ app.post("/deposit", VeriflyIsExistsAccountCPF, (request, response) =>{
   customer.statement.push(statementOperation);
 
   return response.status(201).send();
+});
+
+app.post("/withdraw", VeriflyIsExistsAccountCPF, (request, response) => {
+const { amount } = request.body;
+const { customer } = request;
+
+const balance = getbalance(customer.statement);
+
+if(balance < amount) {
+  return response.status(401).json({ error: "Insufficient funds!" });
+}
+
+const statementOperation = {
+  amount,
+  created_at: new Date,
+  type: "debit",
+};
+
+customer.statement.push(statementOperation);
+
+return response.status(201).send();
 });
 
 app.listen(3333);
