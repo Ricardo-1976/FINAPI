@@ -29,7 +29,7 @@ function getBalance(statement){
 
   return balance;
 }
-
+// Create account
 app.post("/account", (request, response) => {
   const {name , cpf} = request.body;
 
@@ -50,13 +50,13 @@ app.post("/account", (request, response) => {
  
   return response.status(201).send();
 });
-
+// Show statement
 app.get("/statement", VeriflyIsExistsAccountCPF, (request, response) => {
   const {customer} = request;
   
   return response.json(customer.statement);
 });
-
+// Deposit to account
 app.post("/deposit", VeriflyIsExistsAccountCPF, (request, response) =>{
   const { description, amount} = request.body;
 
@@ -72,7 +72,7 @@ app.post("/deposit", VeriflyIsExistsAccountCPF, (request, response) =>{
 
   return response.status(201).send();
 });
-
+// Withdraw from the account
 app.post("/withdraw", VeriflyIsExistsAccountCPF, (request, response) => {
 const { amount } = request.body;
 const { customer } = request;
